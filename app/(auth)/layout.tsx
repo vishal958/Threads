@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Threads",
-  description: "NextJS 14 Threads Application",
+  description: "Threads Application",
 };
 
 export default function RootLayout({
