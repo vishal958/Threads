@@ -90,13 +90,22 @@ function ThreadCard({
                     className='cursor-pointer object-contain'
                   />
                 </Link>
-                <Image
-                  src='/assets/repost.svg'
-                  alt='heart'
-                  width={24}
-                  height={24}
-                  className='cursor-pointer object-contain'
-                />
+                <Link
+                  href={{
+                    pathname: '/create-thread',
+                    query: {
+                      content: `Post by ${author?.name}:\n\n${content}`
+                    }
+                  }} >
+                  <Image
+                    src='/assets/repost.svg'
+                    alt='heart'
+                    width={24}
+                    height={24}
+                    className='cursor-pointer object-contain'
+                  />
+                </Link>
+
                 <Image
                   src='/assets/share.svg'
                   alt='heart'

@@ -4,7 +4,12 @@ import { redirect } from "next/navigation";
 import PostThread from "@/components/forms/PostThread";
 import { fetchUser } from "@/lib/actions/user.actions";
 
-const CreateThread = async () => {
+interface Props {
+  searchParams: { content: string }
+}
+const CreateThread = async ({ searchParams }: Props) => {
+
+  const content = searchParams?.content
   const user = await currentUser();
   if (!user) return null;
 
@@ -14,8 +19,8 @@ const CreateThread = async () => {
 
   return (
     <>
-      <h1 className='head-text'>Create Thread</h1>
-      <PostThread userId={userInfo._id} />
+      <h1 className='head-text'>{content ? 'Repost Thread' : 'Create Thread'}</h1>
+      <PostThread userId={userInfo._id} content={content} />
     </>
   );
 }
