@@ -1,7 +1,9 @@
+'use server'
 import Image from "next/image";
 import Link from "next/link";
 
 import { formatDateString } from "@/lib/utils"
+import LikeComponent from "./Like";
 
 interface Props {
   id: string;
@@ -25,6 +27,8 @@ interface Props {
     };
   }[];
   isComment?: boolean;
+  totalLikes: number,
+  hasCurrentUserLiked: boolean,
 }
 
 function ThreadCard({
@@ -37,12 +41,13 @@ function ThreadCard({
   createdAt,
   comments,
   isComment,
+  totalLikes,
+  hasCurrentUserLiked
 }: Props) {
   return (
     <article
-      className={`flex w-full flex-col rounded-xl ${
-        isComment ? "px-0 xs:px-7" : "bg-dark-2 p-7"
-      }`}
+      className={`flex w-full flex-col rounded-xl ${isComment ? "px-0 xs:px-7" : "bg-dark-2 p-7"
+        }`}
     >
       <div className='flex items-start justify-between'>
         <div className='flex w-full flex-1 flex-row gap-4'>
@@ -70,12 +75,11 @@ function ThreadCard({
 
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
               <div className='flex gap-3.5'>
-                <Image
-                  src='/assets/heart-gray.svg'
-                  alt='heart'
-                  width={24}
-                  height={24}
-                  className='cursor-pointer object-contain'
+                <LikeComponent
+                  threadId={id}
+                  userId={currentUserId}
+                  totalLikes={totalLikes}
+                  hasCurrentUserLiked={hasCurrentUserLiked}
                 />
                 <Link href={`/thread/${id}`}>
                   <Image

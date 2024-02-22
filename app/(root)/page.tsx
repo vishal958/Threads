@@ -43,6 +43,8 @@ async function Home({
                 community={post.community}
                 createdAt={post.createdAt}
                 comments={post.children}
+                totalLikes={post?.likes}
+                hasCurrentUserLiked={userInfo?.likedTweets.includes(post._id)}
               />
             ))}
           </>

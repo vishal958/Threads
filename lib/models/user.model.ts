@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  likedTweets: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Thread',
+  }],
   communities: [
     {
       type: mongoose.Schema.Types.ObjectId,
