@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Thread',
   }],
+  activities: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Activity',
+  }],
   communities: [
     {
       type: mongoose.Schema.Types.ObjectId,
