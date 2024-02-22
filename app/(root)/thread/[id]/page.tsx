@@ -31,7 +31,8 @@ const Thread = async ({ params }: { params: { id: string } }) => {
                     author={thread.author}
                     community={thread.community}
                     createdAt={thread.createdAt}
-                    comments={thread.children}
+                    comments={thread.children} totalLikes={thread?.likes}
+                    hasCurrentUserLiked={userInfo?.likedTweets.includes(thread._id)}
                 />
             </div>
 
@@ -56,6 +57,8 @@ const Thread = async ({ params }: { params: { id: string } }) => {
                         createdAt={childItem.createdAt}
                         comments={childItem.children}
                         isComment
+                        totalLikes={childItem?.likes}
+                        hasCurrentUserLiked={userInfo?.likedTweets.includes(childItem._id)}
                     />
                 ))}
             </div>

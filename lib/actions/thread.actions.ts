@@ -257,6 +257,7 @@ export async function addLikeToThread(threadId: string, userId: string) {
         await user.save();
       }
     }
+    revalidatePath('/', 'layout')
   } catch (err) {
     console.error("Error while fetching thread:", err);
     throw new Error("Unable to fetch thread");

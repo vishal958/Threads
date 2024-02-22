@@ -26,7 +26,7 @@ const Like = ({ userId, threadId, hasCurrentUserLiked, totalLikes }: Props) => {
   return (
     <>
       <Image
-        src={hasLiked ? '/assets/heart-filled.svg/' : '/assets/heart-gray.svg'}
+        src={hasLiked ? '/assets/heart-filled.svg' : '/assets/heart-gray.svg'}
         alt='heart'
         width={24}
         height={24}
