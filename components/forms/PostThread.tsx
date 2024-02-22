@@ -23,9 +23,10 @@ import { createThread } from "@/lib/actions/thread.actions";
 
 interface Props {
   userId: string;
+  content: string,
 }
 
-const PostThread = ({ userId }: Props) => {
+const PostThread = ({ userId, content }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -34,7 +35,7 @@ const PostThread = ({ userId }: Props) => {
   const form = useForm<z.infer<typeof ThreadValidation>>({
     resolver: zodResolver(ThreadValidation),
     defaultValues: {
-      thread: "",
+      thread: content || "",
       accountId: userId,
     },
   });
@@ -73,7 +74,7 @@ const PostThread = ({ userId }: Props) => {
         />
 
         <Button type='submit' className='bg-primary-500'>
-          Post Thread
+          {content ? 'Respost Thread' : 'Post Thread'}
         </Button>
       </form>
     </Form>

@@ -238,3 +238,28 @@ export async function addCommentToThread(
     throw new Error("Unable to add comment");
   }
 }
+
+export async function addLikeToThread(threadId: string, userId: string) {
+  connectToDB()
+  try {
+    const user = await User.findOne({ id: userId });
+    if (!user?.likedTweets?.includes(threadId)) {
+      console.log('like')
+      await Thread.findByIdAndUpdate(threadId, { $inc: { likes: 1 } }, { new: true });
+      user.likedTweets.push(threadId.toString());
+      await user.save();
+    } else {
+      console.log('dlike')
+      await Thread.findByIdAndUpdate(threadId, { $inc: { likes: -1 } }, { new: true });
+      const likedIndex = user.likedTweets.indexOf(threadId);
+      if (likedIndex !== -1) {
+        user.likedTweets.splice(likedIndex, 1);
+        await user.save();
+      }
+    }
+    revalidatePath('/', 'layout')
+  } catch (err) {
+    console.error("Error while fetching thread:", err);
+    throw new Error("Unable to fetch thread");
+  }
+}
