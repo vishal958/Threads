@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { formatDateString } from "@/lib/utils"
 import LikeComponent from "./Like";
+import ShareButton from "./ShareButton";
 
 interface Props {
   id: string;
@@ -49,7 +50,14 @@ function ThreadCard({
       className={`flex w-full flex-col rounded-xl ${isComment ? "px-0 xs:px-7" : "bg-dark-2 p-7"
         }`}
     >
-      <div className='flex items-start justify-between'>
+      {!isComment && !!parentId ? <div className='flex w-full items-center justify-start'>
+        <Link href={`/thread/${parentId}`} className='w-fit'>
+          <h4 className='flex cursor-pointer text-small-regular text-light-2 underline'>
+            Go To Main Thread
+          </h4>
+        </Link>
+      </div> : null}
+      <div className='mt-2 flex items-start justify-between'>
         <div className='flex w-full flex-1 flex-row gap-4'>
           <div className='flex flex-col items-center'>
             <Link href={`/profile/${author.id}`} className='relative h-11 w-11'>
@@ -105,13 +113,9 @@ function ThreadCard({
                     className='cursor-pointer object-contain'
                   />
                 </Link>
-
-                <Image
-                  src='/assets/share.svg'
-                  alt='heart'
-                  width={24}
-                  height={24}
-                  className='cursor-pointer object-contain'
+                <ShareButton
+                  threadId={id}
+                  threadText={content}
                 />
               </div>
 

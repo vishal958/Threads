@@ -7,6 +7,7 @@ import { connectToDB } from "../mongoose";
 import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
+import Activity from "../models/activity.model";
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   connectToDB();
@@ -210,7 +211,11 @@ export async function addCommentToThread(
 
   try {
     // Find the original thread by its ID
-    const originalThread = await Thread.findById(threadId);
+    const originalThread = await Thread.findById(threadId).populate({
+      path: "author",
+      model: User,
+    });
+    const currentUser = await User.findOne({ _id: userId });
 
     if (!originalThread) {
       throw new Error("Thread not found");
@@ -223,6 +228,17 @@ export async function addCommentToThread(
       parentId: threadId, // Set the parentId to the original thread's ID
     });
 
+    if (originalThread.author.id !== currentUser.id) {
+      const author = await User.findOne({ id: originalThread.author.id });
+
+      const activity = await Activity.create({
+        user: currentUser._id,
+        type: 'reply',
+        thread: originalThread._id,
+      });
+      author.activities.push(activity._id);
+      await author.save()
+    }
     // Save the comment thread to the database
     const savedCommentThread = await commentThread.save();
 
@@ -244,12 +260,28 @@ export async function addLikeToThread(threadId: string, userId: string) {
   try {
     const user = await User.findOne({ id: userId });
     if (!user?.likedTweets?.includes(threadId)) {
-      console.log('like')
-      await Thread.findByIdAndUpdate(threadId, { $inc: { likes: 1 } }, { new: true });
+
+      //Update User Like Count
+      const thread = await Thread.findByIdAndUpdate(threadId, { $inc: { likes: 1 } }, { new: true }).populate({
+        path: "author",
+        model: User,
+      });
       user.likedTweets.push(threadId.toString());
       await user.save();
+
+      //Update Author Activities i.e user has liked
+      if (thread.author.id !== userId) {
+        const author = await User.findOne({ id: thread.author.id });
+        const activity = await Activity.create({
+          user: user._id,
+          type: 'like',
+          thread: thread._id,
+        });
+        author.activities.push(activity._id);
+        await author.save()
+      }
+
     } else {
-      console.log('dlike')
       await Thread.findByIdAndUpdate(threadId, { $inc: { likes: -1 } }, { new: true });
       const likedIndex = user.likedTweets.indexOf(threadId);
       if (likedIndex !== -1) {

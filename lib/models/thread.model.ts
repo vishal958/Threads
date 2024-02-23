@@ -25,6 +25,10 @@ const threadSchema = new mongoose.Schema({
   parentId: {
     type: String,
   },
+  // activities: [{
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'Activity',
+  // }],
   children: [
     {
       type: mongoose.Schema.Types.ObjectId,
