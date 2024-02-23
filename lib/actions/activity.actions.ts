@@ -1,12 +1,11 @@
 "use server";
 import { connectToDB } from "../mongoose";
-
 import User from "../models/user.model";
 import Thread from "../models/thread.model";
 
 export async function getActivity(userId: string) {
-  connectToDB();
   try {
+    connectToDB();
     const user = await User.findById(userId)
       .populate({
         path: "activities",

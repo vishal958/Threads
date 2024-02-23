@@ -13,8 +13,8 @@ interface Params {
   username: string;
   name: string;
   bio: string;
-  image: string;
-  path: string;
+  image?: string;
+  path?: string;
 }
 
 export async function updateUser({
@@ -40,7 +40,7 @@ export async function updateUser({
       { upsert: true }
     );
 
-    if (path === "/profile/edit") {
+    if (path === `/profile/${userId}/edit`) {
       revalidatePath(path);
     }
   } catch (error: any) {
