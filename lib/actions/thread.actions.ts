@@ -159,9 +159,8 @@ export async function deleteThread(id: string, path: string): Promise<void> {
 }
 
 export async function fetchThreadById(threadId: string) {
-  connectToDB();
-
   try {
+    connectToDB();
     const thread = await Thread.findById(threadId)
       .populate({
         path: "author",
@@ -207,9 +206,8 @@ export async function addCommentToThread(
   userId: string,
   path: string
 ) {
-  connectToDB();
-
   try {
+    connectToDB();
     // Find the original thread by its ID
     const originalThread = await Thread.findById(threadId).populate({
       path: "author",
@@ -256,8 +254,8 @@ export async function addCommentToThread(
 }
 
 export async function addLikeToThread(threadId: string, userId: string) {
-  connectToDB()
   try {
+    connectToDB()
     const user = await User.findOne({ id: userId });
     if (!user?.likedTweets?.includes(threadId)) {
 

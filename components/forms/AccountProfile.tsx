@@ -38,7 +38,6 @@ interface Props {
 }
 
 const AccountProfile = ({ user, btnTitle }: Props) => {
-    console.log(user)
     const router = useRouter();
     const pathname = usePathname();
     const { startUpload } = useUploadThing("media");

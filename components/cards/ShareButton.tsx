@@ -8,7 +8,7 @@ interface Props {
 }
 
 const ShareButton = ({ threadId, threadText }: Props) => {
-  const [isWebShareSupported, setIsWebShareSupported] = useState(typeof navigator.share === 'function');
+  const [isWebShareSupported, setIsWebShareSupported] = useState(typeof window.navigator.share === 'function');
   const shareUrl = `${window.location.origin}/thread/${threadId}`;
 
   const handleShareClick = async () => {
