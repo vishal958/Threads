@@ -66,26 +66,32 @@ export async function fetchUserPosts(userId: string) {
     connectToDB();
 
     // Find all threads authored by the user with the given userId
-    const threads = await User.findOne({ id: userId }).populate({
-      path: "threads",
-      model: Thread,
-      populate: [
-        {
-          path: "community",
-          model: Community,
-          select: "name id image _id", // Select the "name" and "_id" fields from the "Community" model
-        },
-        {
-          path: "children",
-          model: Thread,
-          populate: {
+    const threads = await User.findOne({ _id: userId })
+      .populate({
+        path: "threads",
+        model: Thread,
+        populate: [
+          {
+            path: "community",
+            model: Community,
+            select: "name id image _id", // Select the "name" and "_id" fields from the "Community" model
+          },
+          {
             path: "author",
             model: User,
-            select: "name image id",
+            select: "name id image ", // Select the "name" and "_id" fields from the "Community" model
           },
-        },
-      ],
-    });
+          {
+            path: "children",
+            model: Thread,
+            populate: {
+              path: "author",
+              model: User,
+              select: "name image id",
+            },
+          },
+        ],
+      });
     return threads;
   } catch (error) {
     console.error("Error fetching user threads:", error);
@@ -173,6 +179,37 @@ export async function getActivity(userId: string) {
       select: "name image _id",
     });
 
+    return replies;
+  } catch (error) {
+    console.error("Error fetching replies: ", error);
+    throw error;
+  }
+}
+
+export async function getUserReplies(userId: string) {
+  try {
+    connectToDB();
+
+    const replies = await Thread.find({
+      author: userId,
+      parentId: { $exists: true },
+    }).sort({ createdAt: "desc" })
+      .populate({
+        path: "author",
+        model: User,
+      })
+      .populate({
+        path: "community",
+        model: Community,
+      })
+      .populate({
+        path: "children", // Populate the children field
+        populate: {
+          path: "author", // Populate the author field within children
+          model: User,
+          select: "_id name parentId image", // Select only _id and username fields of the author
+        },
+      });;
     return replies;
   } catch (error) {
     console.error("Error fetching replies: ", error);

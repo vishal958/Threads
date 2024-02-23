@@ -1,56 +1,62 @@
 import { redirect } from "next/navigation";
 
 import { fetchCommunityPosts } from "@/lib/actions/community.actions";
-import { fetchUserPosts } from "@/lib/actions/user.actions";
+import { fetchUserPosts, getUserReplies } from "@/lib/actions/user.actions";
 
 import ThreadCard from "../cards/ThreadCard";
 
 interface Result {
-  name: string;
-  image: string;
-  id: string;
-  threads: {
-    _id: string;
-    text: string;
-    parentId: string | null;
+  name: string,
+  id: string,
+  image: string,
+  likes: number,
+  _id: string;
+  text: string;
+  parentId: string | null;
+  author: {
+    name: string;
+    image: string;
+    id: string;
+  };
+  community: {
+    id: string;
+    name: string;
+    image: string;
+  } | null;
+  createdAt: string;
+  children: [{
     author: {
-      name: string;
       image: string;
-      id: string;
     };
-    community: {
-      id: string;
-      name: string;
-      image: string;
-    } | null;
-    createdAt: string;
-    children: {
-      author: {
-        image: string;
-      };
-    }[];
-  }[];
+  }]
 }
 
 interface Props {
   currentUserId: string;
-  accountId: string;
+  userInfo: any;
   accountType: string;
+  value: string,
 }
 
-async function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
-  let result: Result;
+async function ThreadsTab({ currentUserId, userInfo, accountType, value }: Props) {
+  let result: Result[];
+  const accountId = userInfo._id
 
-  if (accountType === "Community") {
-    result = await fetchCommunityPosts(accountId);
-  } else {
-    result = await fetchUserPosts(accountId);
+  if (value === 'threads') {
+    if (accountType === "Community") {
+      result = (await fetchCommunityPosts(accountId))?.threads;
+    } else {
+      result = (await fetchUserPosts(accountId))?.threads;
+    }
+  } else if (value === "replies") {
+    result = await getUserReplies(accountId)
   }
 
- 
+
+
   return (
     <section className='mt-9 flex flex-col gap-10'>
-      {result.threads.map((thread) => (
+      {result?.map((thread: Result) => (
         <ThreadCard
           key={thread._id}
           id={thread._id}
@@ -59,20 +65,22 @@ async function ThreadsTab({ currentUserId, accountId, accountType }: Props) {
           content={thread.text}
           author={
             accountType === "User"
-              ? { name: result.name, image: result.image, id: result.id }
+              ? { name: thread.author.name, image: thread.author.image, id: thread.author.name }
               : {
-                  name: thread.author.name,
-                  image: thread.author.image,
-                  id: thread.author.id,
-                }
+                name: thread.author.name,
+                image: thread.author.image,
+                id: thread.author.id,
+              }
           }
           community={
             accountType === "Community"
-              ? { name: result.name, id: result.id, image: result.image }
+              ? { name: thread.author.name, id: thread.author.name, image: thread.author.image }
               : thread.community
           }
           createdAt={thread.createdAt}
           comments={thread.children}
+          totalLikes={thread?.likes}
+          hasCurrentUserLiked={userInfo?.likedTweets.includes(thread._id)}
         />
       ))}
     </section>
