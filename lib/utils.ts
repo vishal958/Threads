@@ -41,3 +41,46 @@ export function formatThreadCount(count: number): string {
     return `${threadCount} ${threadWord}`;
   }
 }
+
+export function swapTags(text: string) {
+  let displayText = text;
+  const tags = text.match(/@\{\{[^\}]+\}\}/gi) || [];
+  const mentions: string[] = []
+
+  tags.forEach((myTag) => {
+    const tagData = myTag.slice(3, -2);
+    const tagDataArray = tagData.split('||');
+    const tagDisplayValue = tagDataArray[2];
+    const tagId = tagDataArray[1]
+    if (!mentions.includes(tagId)) {
+      mentions.push(tagId)
+    }
+    const regex = new RegExp(escapeRegExp(myTag), 'gi');
+    displayText = displayText.replace(regex, `<a href=/profile/${tagId}>${tagDisplayValue}</a>`);
+  });
+
+  return { displayText, mentions };
+}
+
+export function getUsersFromTags(text: string) {
+  const tags = text.match(/@\{\{[^\}]+\}\}/gi) || [];
+
+  const allUserIds = tags.map((myTag) => {
+    const tagData = myTag.slice(3, -2);
+    const tagDataArray = tagData.split('||');
+    return { _id: tagDataArray[1], name: tagDataArray[2] };
+  });
+
+  const uniqueUsers: any[] = [];
+  allUserIds.forEach((myUser) => {
+    if (!uniqueUsers.some((user) => user._id === myUser._id)) {
+      uniqueUsers.push(myUser);
+    }
+  });
+
+  return uniqueUsers;
+}
+
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}

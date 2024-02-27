@@ -20,7 +20,7 @@ const CreateThread = async ({ searchParams }: Props) => {
   return (
     <>
       <h1 className='head-text'>{content ? 'Repost Thread' : 'Create Thread'}</h1>
-      <PostThread userId={userInfo._id} content={content} />
+      <PostThread clerkUserId={user.id} userId={userInfo._id} content={content} />
     </>
   );
 }

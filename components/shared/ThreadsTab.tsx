@@ -36,23 +36,21 @@ interface Props {
   userInfo: any;
   accountType: string;
   value: string,
+  communityId: string,
 }
 
-async function ThreadsTab({ currentUserId, userInfo, accountType, value }: Props) {
+async function ThreadsTab({ currentUserId, userInfo, accountType, value, communityId}: Props) {
   let result: Result[];
   const accountId = userInfo._id
-
   if (value === 'threads') {
     if (accountType === "Community") {
-      result = (await fetchCommunityPosts(accountId))?.threads;
+      result = (await fetchCommunityPosts(communityId))?.threads;
     } else {
       result = (await fetchUserPosts(accountId))?.threads;
     }
   } else if (value === "replies") {
     result = await getUserReplies(accountId)
   }
-
-
 
   return (
     <section className='mt-9 flex flex-col gap-10'>
@@ -80,7 +78,7 @@ async function ThreadsTab({ currentUserId, userInfo, accountType, value }: Props
           createdAt={thread.createdAt}
           comments={thread.children}
           totalLikes={thread?.likes}
-          hasCurrentUserLiked={userInfo?.likedTweets.includes(thread._id)}
+          hasCurrentUserLiked={userInfo?.likedTweets?.includes(thread._id)}
         />
       ))}
     </section>

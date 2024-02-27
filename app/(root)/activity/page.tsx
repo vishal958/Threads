@@ -38,6 +38,7 @@ async function Page() {
                     </span>{" "}
                     {activity?.type === 'like' ? 'liked to your thread' : null}
                     {activity?.type === 'reply' ? 'replied to your thread' : null}
+                    {activity?.type === 'mention' ? 'mentioned you in his thread' : null}
                   </p>
                 </article>
               </Link>
