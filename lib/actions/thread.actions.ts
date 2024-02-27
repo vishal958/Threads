@@ -54,9 +54,10 @@ interface Params {
   author: string,
   communityId: string | null,
   path: string,
+  mentions: string[]
 }
 
-export async function createThread({ text, author, communityId, path }: Params
+export async function createThread({ text, author, communityId, path, mentions }: Params
 ) {
   try {
     connectToDB();
@@ -76,6 +77,22 @@ export async function createThread({ text, author, communityId, path }: Params
     await User.findByIdAndUpdate(author, {
       $push: { threads: createdThread._id },
     });
+
+    const activity = await Activity.create({
+      user: author,
+      type: 'mention',
+      thread: createdThread._id,
+    });
+
+    const activityUtil = async (e: string) => {
+      const mentionUser = await User.findOne({ id: e });
+      mentionUser.activities.push(activity._id);
+      await mentionUser.save()
+    }
+    // Update each mentioned user that auhtor has mention him, in his thread
+    mentions.forEach((e) => {
+      activityUtil(e)
+    })
 
     if (communityIdObject) {
       // Update Community model

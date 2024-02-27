@@ -18,6 +18,10 @@ const threadSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  // likedUsers: [{
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'User',
+  // }],
   likes: {
     type: Number,
     default: 0,

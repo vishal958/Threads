@@ -8,7 +8,7 @@ const activitySchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['like', 'reply'],
+    enum: ['like', 'reply', 'mention'],
     required: true,
   },
   thread: {

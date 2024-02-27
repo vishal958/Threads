@@ -9,11 +9,13 @@ import ProfileHeader from "@/components/shared/ProfileHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { fetchCommunityDetails } from "@/lib/actions/community.actions";
+import { fetchUser } from "@/lib/actions/user.actions";
 
 const Page = async ({ params }: { params: { id: string } }) => {
   const user = await currentUser();
   if (!user) return null;
 
+  const userInfo = await fetchUser(user?.id);
   const communityDetails = await fetchCommunityDetails(params.id);
 
   return (
@@ -42,21 +44,22 @@ const Page = async ({ params }: { params: { id: string } }) => {
                 />
                 <p className='max-sm:hidden'>{tab.label}</p>
 
-                {tab.label === "Threads" && (
+                {/* {tab.label === "Threads" && (
                   <p className='ml-1 rounded-sm bg-light-4 px-2 py-1 !text-tiny-medium text-light-2'>
                     {communityDetails.threads.length}
                   </p>
-                )}
+                )} */}
               </TabsTrigger>
             ))}
           </TabsList>
 
           <TabsContent value='threads' className='w-full text-light-1'>
-            {/* @ts-ignore */}
             <ThreadsTab
               currentUserId={user.id}
-              accountId={communityDetails._id}
               accountType='Community'
+              value='threads'
+              communityId={communityDetails._id }
+              userInfo={userInfo}
             />
           </TabsContent>
 
@@ -76,11 +79,12 @@ const Page = async ({ params }: { params: { id: string } }) => {
           </TabsContent>
 
           <TabsContent value='requests' className='w-full text-light-1'>
-            {/* @ts-ignore */}
             <ThreadsTab
               currentUserId={user.id}
-              accountId={communityDetails._id}
               accountType='Community'
+              value='requests'
+              communityId={communityDetails._id }
+              userInfo={userInfo}
             />
           </TabsContent>
         </Tabs>
