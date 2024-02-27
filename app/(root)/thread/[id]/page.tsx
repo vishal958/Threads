@@ -41,6 +41,7 @@ const Thread = async ({ params }: { params: { id: string } }) => {
                     threadId={params.id}
                     currentUserImg={user?.imageUrl}
                     currentUserId={JSON.stringify(userInfo._id)}
+                    clerkUserId={user.id}
                 />
             </div>
 
