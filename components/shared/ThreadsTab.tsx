@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { fetchCommunityPosts } from "@/lib/actions/community.actions";
-import { fetchUserPosts, getUserReplies } from "@/lib/actions/user.actions";
+import { fetchUserPosts, getUserReplies, getMentionThread } from "@/lib/actions/user.actions";
 
 import ThreadCard from "../cards/ThreadCard";
 
@@ -39,7 +39,7 @@ interface Props {
   communityId: string,
 }
 
-async function ThreadsTab({ currentUserId, userInfo, accountType, value, communityId}: Props) {
+async function ThreadsTab({ currentUserId, userInfo, accountType, value, communityId }: Props) {
   let result: Result[];
   const accountId = userInfo._id
   if (value === 'threads') {
@@ -50,6 +50,8 @@ async function ThreadsTab({ currentUserId, userInfo, accountType, value, communi
     }
   } else if (value === "replies") {
     result = await getUserReplies(accountId)
+  } else if (value === "tagged") {
+    result = await getMentionThread(currentUserId)
   }
 
   return (
@@ -59,11 +61,11 @@ async function ThreadsTab({ currentUserId, userInfo, accountType, value, communi
           key={thread._id}
           id={thread._id}
           currentUserId={currentUserId}
-          parentId={thread.parentId}
-          content={thread.text}
+          parentId={thread?.parentId}
+          content={thread?.text}
           author={
             accountType === "User"
-              ? { name: thread.author.name, image: thread.author.image, id: thread.author.name }
+              ? { name: thread?.author?.name, image: thread?.author?.image, id: thread?.author?.name }
               : {
                 name: thread.author.name,
                 image: thread.author.image,
@@ -75,8 +77,8 @@ async function ThreadsTab({ currentUserId, userInfo, accountType, value, communi
               ? { name: thread.author.name, id: thread.author.name, image: thread.author.image }
               : thread.community
           }
-          createdAt={thread.createdAt}
-          comments={thread.children}
+          createdAt={thread?.createdAt}
+          comments={thread?.children}
           totalLikes={thread?.likes}
           hasCurrentUserLiked={userInfo?.likedTweets?.includes(thread._id)}
         />

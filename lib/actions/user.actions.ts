@@ -7,6 +7,7 @@ import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
 import { connectToDB } from "../mongoose";
+import Activity from "../models/activity.model";
 
 interface Params {
   userId: string;
@@ -213,6 +214,45 @@ export async function getUserReplies(userId: string) {
     return replies;
   } catch (error) {
     console.error("Error fetching replies: ", error);
+    throw error;
+  }
+}
+
+export async function getMentionThread(userId: string) {
+  try {
+    connectToDB();
+    const activities = await User.findOne({
+      id: userId,
+    }).populate({
+      path: "activities",
+      model: Activity,
+      populate: [
+        {
+          path: "thread",
+          model: Thread,
+          populate: [
+            {
+              path: "author",
+              model: User,
+              select: "name id image ",
+            },
+            {
+              path: "community",
+              model: Community,
+              select: "name id image _id",
+            },
+          ]
+        },
+      ]
+    });
+    return activities.activities
+      .filter((e: { type: string }) => e.type == 'mention')
+      .reduce((acc: any, value: any) => {
+        return [...acc, value.thread]
+      }, [])
+
+  } catch (error) {
+    console.error("Error fetching threads: ", error);
     throw error;
   }
 }
